@@ -1,0 +1,102 @@
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="leaflet/leaflet.css"
+    />
+    <script src="leaflet/leaflet.js"></script>
+    <!-- Basemap -->
+    <link
+      rel="stylesheet"
+      href="leaflet/leaflet.groupedlayercontrol.css"
+    />
+    <script src="leaflet/leaflet.groupedlayercontrol.js"></script>
+    <!-- SHP Solo -->
+    <script src="solo.js"></script>
+    <!--mouse coordinat-->
+    <link
+      rel="stylesheet"
+      href="leaflet/L.Control.MousePosition.css"
+    />
+    <script src="leaflet/L.Control.MousePosition.js"></script>
+    <!--minimap-->
+    <link
+      rel="stylesheet"
+      href="leaflet/Control.MiniMap.css"
+    />
+    <script src="leaflet/Control.MiniMap.js"></script>
+    <!--measurment-->
+    <link
+      rel="stylesheet"
+      href="leaflet/Leaflet.LinearMeasurement.css"
+    />
+    <script src="leaflet/Leaflet.LinearMeasurement.js"></script>
+  </head>
+
+  <body>
+    <div
+      style="height: 500px"
+      id="mapid"
+    ></div>
+    <!-- Bodymap -->
+    <script>
+      var mymap = L.map('mapid').setView([-7.569437, 110.825272], 13);
+      var GoogleMaps = new L.TileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+        opacity: 1.0,
+        attribution: 'Ketrampilan Berkehidupan dan WEBSIG UMS',
+      }).addTo(mymap);
+      var GoogleSatelliteHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+        maxZoom: 22,
+        attribution: 'Ketrampilan Berkehidupan dan WEBSIG UMS',
+      });
+      var baseLayers = {
+        'Google Satellite Hybrid': GoogleSatelliteHybrid,
+        'Google Maps': GoogleMaps,
+      };
+      L.control.groupedLayers(baseLayers).addTo(mymap);
+      <!-- Memunculkan polygon -->
+      var polyg2 = L.geoJson(polygons.features).addTo(mymap);
+      var marker = L.marker([-7.56945, 110.82528]).addTo(mymap);
+      marker.bindPopup('<b>Informasi</b><br>Rumah Budi – E1800000');
+      //Menambahkan skala
+      L.control
+        .scale({
+          maxWidth: 100,
+          metric: true,
+          imperial: false,
+          position: 'bottomright',
+        })
+        .addTo(mymap);
+      //Menambahkan mouse coordinate
+      L.control.mousePosition().addTo(mymap);
+      //Menambahkan North
+      var north = L.control({ position: 'bottomleft', size: 2 });
+      north.onAdd = function (mymap) {
+        var div = L.DomUtil.create('div', 'info legend');
+        div.innerHTML = '<img src="tes.png" width="100" height="100">'; //mengatur ukuran gambar width="100" height="100"
+        return div;
+      };
+      north.addTo(mymap);
+      //insert
+      var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+      var osmAttrib = 'Map data &copy; OpenStreetMap contributors';
+      var osm = new L.TileLayer(osmUrl, { minZoom: 10, maxZoom: 18, attribution: osmAttrib });
+
+      mymap.addLayer(osm);
+      mymap.setView(new L.LatLng(-7.569437, 110.825272), 13);
+
+      //Plugin magic goes here! Note that you cannot use the same layer object again, as that will confuse the two map controls
+      var osm2 = new L.TileLayer(osmUrl, { minZoom: 0, maxZoom: 13, attribution: osmAttrib });
+      var miniMap = new L.Control.MiniMap(osm2, { toggleDisplay: true }).addTo(mymap);
+
+      //measurment
+      mymap.addControl(
+        new L.Control.LinearMeasurement({
+          unitSystem: 'metric',
+          color: '#FF0080',
+          type: 'line',
+        })
+      );
+    </script>
+  </body>
+</html>
